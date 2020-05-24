@@ -15,6 +15,7 @@ Install [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git), [G
 Install [pipx](https://pipxproject.github.io/pipx/), then use pipx to install in isolated environments:
  - [Cookiecutter](https://cookiecutter.readthedocs.io/en/1.7.2/installation.html)
  - [Poetry](https://github.com/python-poetry/poetry/issues/677)
+ - [Virtualenv](https://virtualenv.pypa.io/en/latest/installation.html)
 
 Now you can create a Python cli, quickly with (See README.md for more details.)
 
