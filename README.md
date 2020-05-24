@@ -22,11 +22,20 @@ Now you can create a Python cli, quickly with (See README.md for more details.)
 cookiecutter gh:rnwolf/poetry_typer
 cd <CLI directory>
 git init
+git config --global core.safecrlf false
 git add --all
 git commit -m "first commit"
 gh repo create --public
 git push -u origin master
 ```
+
+Side note:  I use Windows and Linux frequently, so there is sometime a problem with line ending in text files on MS-Windows.
+I use the following to supress all the git warnings about line ending changes.
+
+git config --global core.safecrlf false
+
+See this discussion for more comments about the complicatons https://github.com/actions/checkout/issues/135
+My take and summary is you want to use .gitattributes and default to LF line endings everywhere.
 
 ## Features
 
@@ -52,7 +61,7 @@ git push -u origin master
 ## Interesting references
 
 See https://dev.to/mburszley/an-introduction-to-poetry-2b6n
-
+[Hyper moden Python](https://cjolowicz.github.io/posts/hypermodern-python-01-setup/)
 [How to make a Python package using Poetry](https://dev.to/sivakon/python-poetry-35ec)
 [Packaging python using Poetry on Google Cloud](https://dev.to/sivakon/packaging-python-using-poetry-on-google-cloud-l8d)
 [GitHub Actions: Automate Your Python Development Workflow with poetry](https://dan.yeaw.me/)
