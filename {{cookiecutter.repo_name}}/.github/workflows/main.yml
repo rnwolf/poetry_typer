@@ -1,0 +1,247 @@
+name: Lint
+on:
+  # Trigger the workflow on push or pull request,
+  # but only for the master branch
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - master
+    tags:
+      - 'v*'
+
+# Notes on how to set ENV vars for multiple jobs. https://github.com/actions/starter-workflows/issues/68
+env:
+  APP_NAME: {{ cookiecutter.cli_name }}
+  APP_LOCATION: {{ cookiecutter.package_name }}
+  PACKAGE_NAME: {{ cookiecutter.package_name }}
+  PYTHON_VERSION: "{{ cookiecutter.python_version }}"
+{%raw%}
+
+jobs:
+    security_checks:
+        runs-on: ubuntu-latest
+        needs: [ Linting, GetTagVersion ]
+        name: Pycharm-security action
+        steps:
+          - uses: actions/checkout@v1
+          - name: Run PyCharm Security
+            uses: tonybaloney/pycharm-security@master
+            with:
+              path: ${{ env.APP_LOCATION }}
+
+    GetTagVersion:
+        # In theory the pyproject.toml version number and the git tag version should always be the same.
+        runs-on: ubuntu-latest
+        outputs:
+          tagversion: ${{ steps.get_tag_version.outputs.VERSION }}
+          tagcount: ${{ steps.get_tag_version.outputs.COUNT }}
+        steps:
+        - uses: actions/checkout@v1
+        - id: get_tag_version
+          run: |
+            echo ::set-output name=VERSION::$(git tag -l | tail -n1 | cut -c2- )
+            echo ::set-output name=COUNT::$(git tag -l | wc -l )
+            echo ${{ github.ref }}
+
+    UpdateVersionPyProject:
+        runs-on: ubuntu-latest
+        name: Check tags and their count in repo.
+        needs: GetTagVersion
+        #if: needs.GetTagVersion.outputs.tagcount >= 1
+        steps:
+        - run: |
+            echo needs.GetTagVersion.outputs.tagcount: ${{needs.GetTagVersion.outputs.tagcount}}
+            echo needs.GetTagVersion.outputs.tagversion: ${{needs.GetTagVersion.outputs.tagversion}}
+            echo pyproject.toml version: $(grep ^version pyproject.toml | cut -d\" -f2)
+
+    SetFirstVersion:
+        name: Set first version tag if required
+        needs: GetTagVersion
+        # need to check the level here when we have clean repo with no tags in it.
+        # The tags filter at the top of workflow should enure that action is
+        # only ever run when we tag a commit.
+        if: needs.GetTagVersion.outputs.tagcount <= 1
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v1
+        - name: Force create tag
+          run: |
+                echo ${{needs.GetTagVersion.outputs.tagversion}}
+                git remote set-url origin "https://rnwolf:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+                git tag -f v$(grep ^version pyproject.toml | cut -d\" -f2)
+                git push -f --tags
+
+    Linting:
+        runs-on: ubuntu-latest
+        needs: GetTagVersion
+        # Don't lint on the first push. Still getting the plumbing working.
+        if: needs.GetTagVersion.outputs.tagcount >= 1
+        steps:
+        - name: What tag version
+          run: echo ${{ needs.GetTagVersion.outputs.tagversion }}
+        - uses: actions/checkout@v2
+        - name: Set up Python
+          uses: actions/setup-python@v1
+          with:
+            python-version: ${{ env.PYTHON_VERSION }}
+        - name: Linting
+          run: |
+             pip install pre-commit
+             pre-commit run --all-files
+
+    Multi-OS-Tests:
+        # Run tests on mutiple operating systems, with the most recent versions of python.
+        if: needs.GetTagVersion.outputs.tagcount > 1
+        needs: [ Linting, GetTagVersion ]
+        name: ${{ matrix.os }} / ${{ matrix.python-version }}
+        runs-on: ${{ matrix.os }}-latest
+        strategy:
+          matrix:
+            os: [Ubuntu, MacOS, Windows]
+            python-version: [3.7, 3.8]
+        steps:
+        - uses: actions/checkout@v2
+
+        - name: Set up Python ${{ matrix.python-version }}
+          uses: actions/setup-python@v1
+          with:
+              python-version: ${{ matrix.python-version }}
+
+        - name: Get full python version
+          id: full-python-version
+          shell: bash
+          run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info))")
+
+        - name: Install poetry
+          shell: bash
+          run: |
+            curl -fsS -o get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
+            python get-poetry.py --preview -y
+            echo "::set-env name=PATH::$HOME/.poetry/bin:$PATH"
+        - name: Configure poetry
+          shell: bash
+          run: poetry config virtualenvs.in-project true
+
+        - name: Set up cache
+          uses: actions/cache@v1
+          id: cache
+          with:
+            path: .venv
+            key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+
+        - name: Ensure cache is healthy
+          if: steps.cache.outputs.cache-hit == 'true'
+          shell: bash
+          run: poetry run pip --version >/dev/null 2>&1 || rm -rf .venv
+
+        - name: Install dependencies
+          shell: bash
+          run: poetry install
+
+        - name: Run pytest
+          shell: bash
+          run: poetry run pytest -q tests
+
+    Build-Distribution-On-Linux:
+        needs: [ GetTagVersion, Multi-OS-Tests ] # need this dependency to iensure pyproject.yoml is updated with version number.
+        runs-on: ubuntu-latest
+        # Note that there is still some instability around using pip and poetry to build distribution aretefacts :(
+        # Check out the poetry github workflows for examples on how to build artefacts in MS-Windows and MacOS
+        # The final distribution to the PyPI will be manual. Download the arefacts, from github, into your dist directory
+        # use `poetry publish` to upload.
+        steps:
+        - uses: actions/checkout@v2
+        - name: Building release
+          run: |
+            echo `pwd`
+            echo ${{ needs.GetTagVersion.outputs.tagversion }}
+            sed -i 's/^version\ =\ .*/version\ =\ "${{needs.GetTagVersion.outputs.tagversion}}"/' pyproject.toml
+            grep ^version pyproject.toml
+            docker pull quay.io/pypa/manylinux2014_x86_64
+            docker run --rm -i -v `pwd`:/io quay.io/pypa/manylinux2014_x86_64 /io/make-linux-release.sh
+            ls ./dist
+        - name: Upload wheel release files
+          uses: actions/upload-artifact@v2
+          with:
+            name: ${{ env.PACKAGE_NAME }}-${{ needs.GetTagVersion.outputs.tagversion }}-py3-none-any.whl
+            path: ./dist/${{ env.PACKAGE_NAME }}-${{ needs.GetTagVersion.outputs.tagversion }}-py3-none-any.whl
+
+        - name: Upload release file
+          uses: actions/upload-artifact@v2
+          with:
+            name: ${{ env.PACKAGE_NAME }}-${{ needs.GetTagVersion.outputs.tagversion }}.tar.gz
+            path: ./dist/ #${{ env.PACKAGE_NAME }}-${{ needs.GetTagVersion.outputs.tagversion }}.tar.gz
+
+    build-and-deploy-gh-pages:
+        needs: Linting
+        runs-on: ubuntu-latest
+        steps:
+        - name: Install plantuml
+          run: sudo apt-get install plantuml
+
+        - name: Checkout the code on master
+          uses: actions/checkout@v2
+          with:
+                persist-credentials: false
+        - name: Set up Python
+          uses: actions/setup-python@v2
+          with:
+            python-version: ${{ env.PYTHON_VERSION }}
+
+        - name: Upgrade pip
+          run: |
+                # install pip=>20.1 to use "pip cache dir"
+                python3 -m pip install --upgrade pip
+
+        - name: Get pip cache dir
+          id: pip-cache
+          run: echo "::set-output name=dir::$(pip cache dir)"
+
+        - name: Cache dependencies
+          uses: actions/cache@v1
+          with:
+            path: ${{ steps.pip-cache.outputs.dir }}
+            key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+            restore-keys: |
+                ${{ runner.os }}-pip-
+
+        - name: Install MKDocs and supporting packages
+          run: python3 -m pip install mkdocs plantuml-markdown
+
+        - name: Build MkDocs
+          run: python3 -m mkdocs build
+
+        - name: Publish 🚀
+          uses: peaceiris/actions-gh-pages@v3 #https://github.com/peaceiris/actions-gh-pages
+          with:
+                github_token: ${{ secrets.GITHUB_TOKEN }} # Note previously we required a PERSONAL_TOKEN not anymore! https://github.community/t5/GitHub-Actions/Github-action-not-triggering-gh-pages-upon-push/m-p/31283/highlight/true#M751
+                # A unique GITHUB_TOKEN is automatically created each time your GitHub Action is run.
+                publish_dir: ./public
+
+    release:
+        needs: [GetTagVersion, Build-Distribution-On-Linux]
+        name: Create Release
+        runs-on: ubuntu-latest
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@master
+        - name: Create Release
+          id: create_release
+          uses: actions/create-release@v1
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+          with:
+            tag_name: ${{ needs.GetTagVersion.outputs.tagversion }}
+            release_name: Release ${{ needs.GetTagVersion.outputs.tagversion }}
+            body: |
+                See changes.md for details about this Release.
+            draft: false
+            prerelease: false
+
+    # Could put a step here to publish to PyPI, but that is not reversable
+    # So I can do that manually with the release artefacts via poetry publish
+{%endraw%}

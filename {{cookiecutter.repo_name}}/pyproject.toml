@@ -1,0 +1,72 @@
+[build-system]
+requires = ["poetry>=1.0"]
+build-backend = "poetry.masonry.api"
+
+
+[tool.nitpick]
+style = "https://raw.githubusercontent.com/wemake-services/wemake-python-styleguide/master/styles/nitpick-style-wemake.toml"
+
+
+[tool.poetry]
+name = "{{ cookiecutter.package_name }}"
+version = "{{ cookiecutter.version }}"
+description = "{{ cookiecutter.project_short_description }}"
+license = "{{ cookiecutter.license|upper }}"
+authors = ["{{ cookiecutter.full_name}} <{{ cookiecutter.email }}>"]
+readme = "README.md"
+repository = "https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.repo_name }}"
+homepage = "https://{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.package_name }}/"
+keywords = [{{ cookiecutter.key_words }}]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+
+[tool.poetry.scripts]
+{{ cookiecutter.cli_name }} = "{{ cookiecutter.package_name }}.{{ cookiecutter.package_name }}:main"
+
+
+[tool.poetry.dependencies]
+python = "^{{cookiecutter.python_major_version}}.{{cookiecutter.python_minor_version}}"
+typer = "*"
+dynaconf = "^3.0.0rc1"
+importlib_metadata = {version = "^1.6.0", python = "<3.8"}
+
+
+[tool.poetry.dev-dependencies]
+interrogate = "*"
+pip-tools = "*"
+proclamation = "^1.0.2"
+typer-cli = "*"
+mypy = "^0.770"
+plantuml-markdown = "^3.2.2"
+
+flake8 = "*"
+flake8-pytest-style = "^1.1"
+flake8-docstrings = "*"
+flake8-bandit = "*"
+flake8-bugbear = "*"
+flake8-deprecated = "*"
+flake8-executable = "*"
+flake8-black = "*"
+nitpick = "^0.22"
+
+safety = "^1.9"
+
+pytest = "^5.4"
+pytest-cov = "^2.7"
+pytest-asyncio = "*"
+pytest-randomly = "^3.3"
+
+black = "==19.10b0"
+pre-commit = "*"
+pre-commit-hooks = "*"
+
+importlib_resources = "*"
+rope = "*"
+hypothesis = "*"
+httpie = "*"
+mkdocs = "^1.1"

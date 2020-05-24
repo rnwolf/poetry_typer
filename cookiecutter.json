@@ -1,0 +1,19 @@
+﻿{
+  "project_name": "My Project Name",
+  "repo_name": "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}",
+  "full_name": "Rudiger Wolf",
+  "email": "Rudiger.Wolf@ThroughputFocus.com",
+  "github_username": "rnwolf",
+  "default_branch": "master",
+  "package_name": "IMPORTANT: Short lowercase name with no dashes.",
+  "cli_name": "myapp",
+  "project_short_description": "Sample project generated from Rudi's Python Template.",
+  "key_words":"'Keyword1', 'keyword2'",
+  "python_major_version": 3,
+  "python_minor_version": 8,
+  "python_version": "{{ cookiecutter.python_major_version }}.{{ cookiecutter.python_minor_version }}",
+  "python_matrix" : "'3.7','3.8' Specify which versions of python to run tests with.",
+  "year_to": "{% now 'utc', '%Y' %}",
+  "version": "0.0.0",
+  "license": "MIT"
+}

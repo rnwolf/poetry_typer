@@ -1,0 +1,12 @@
+site_name: {{ cookiecutter.project_name }}
+repo_url: https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.repo_name }}
+site_dir: public
+
+markdown_extensions:
+  - plantuml_markdown
+  - toc:
+      anchorlink: True
+      separator: "_"
+  - admonition
+  - tables
+  - sane_lists

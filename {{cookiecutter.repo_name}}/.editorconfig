@@ -1,0 +1,22 @@
+# .editorconfig
+
+# EditorConfig is awesome: http://EditorConfig.org
+
+# This is the file in the root of the project.
+# For sub folders you can have other files that override only some settings.
+# For these, this settings should be false.
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+end_of_line = lf
+# This should match the settings in your build tools.
+
+[*.{cmd,bat}]
+# batch files on Windows should stay with CRLF
+end_of_line = crlf

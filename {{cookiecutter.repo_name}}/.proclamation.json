@@ -1,0 +1,25 @@
+{
+    "#": "This is a config file for Proclamation, the changelog combiner: https://gitlab.com/ryanpavlik/proclamation",
+    "SPDX-License-Identifier: CC0-1.0": "",
+    "SPDX-FileCopyrightText: 2020 Collabora, Ltd. and the Proclamation contributors": "",
+    "project_name": "{{ cookiecutter.project_name }}",
+    "base_url": "https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.repo_name }}",
+    "news_filename": "./docs/changelog.md",
+    "sections": {
+        "Bugfix": {
+            "directory": "changes/bugfix"
+        },
+        "Documentation": {
+            "directory": "changes/doc"
+        },
+        "Feature": {
+            "directory": "changes/feature"
+        },
+        "Removal": {
+            "directory": "changes/removal"
+        },
+        "Misc": {
+            "directory": "changes/misc"
+        }
+    }
+}
