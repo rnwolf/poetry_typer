@@ -64,11 +64,11 @@ My take and summary is you want to use .gitattributes and default to LF line end
 
 ## Interesting references
 
-See https://dev.to/mburszley/an-introduction-to-poetry-2b6n
-[Hyper moden Python](https://cjolowicz.github.io/posts/hypermodern-python-01-setup/)
-[How to make a Python package using Poetry](https://dev.to/sivakon/python-poetry-35ec)
-[Packaging python using Poetry on Google Cloud](https://dev.to/sivakon/packaging-python-using-poetry-on-google-cloud-l8d)
-[GitHub Actions: Automate Your Python Development Workflow with poetry](https://dan.yeaw.me/)
+ - See https://dev.to/mburszley/an-introduction-to-poetry-2b6n
+ - [Hyper moden Python](https://cjolowicz.github.io/posts/hypermodern-python-01-setup/)
+ - [How to make a Python package using Poetry](https://dev.to/sivakon/python-poetry-35ec)
+ - [Packaging python using Poetry on Google Cloud](https://dev.to/sivakon/packaging-python-using-poetry-on-google-cloud-l8d)
+ - [GitHub Actions: Automate Your Python Development Workflow with poetry](https://dan.yeaw.me/)
 
 
 # TODO
