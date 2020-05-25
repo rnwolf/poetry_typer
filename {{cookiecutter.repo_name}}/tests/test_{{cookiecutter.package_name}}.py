@@ -12,3 +12,21 @@ def test_roll_num(capsys):
     roll_str, total = re.search(regex, stdout).groups()
     assert roll_str == "1D20"
     assert int(total) in range(1, 21)
+
+
+def test_parse_dice_string_good_input():
+    """Check that we get expected output for "2D6"
+    """
+    result = parse_dice_string("2D6")
+
+    assert result[0] == int(2)
+    assert result[1] == int(6)
+
+
+def test_parse_dice_string_unknown_input():
+    """Check that we get expected output error for input "ZZZZ"
+    that does not match the expected argument format
+    """
+    with pytest.raises(Exception) as e_info:
+        result = parse_dice_string("ZZZZ")  # noqa: F841
+    assert e_info.value.args[0] == "bad string"
