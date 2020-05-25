@@ -102,10 +102,18 @@ gh issue create
 
 # Make sure you use the utilities installed to ensure quality.
 pytest  # Run all automated tests
+pytest --cov={{cookiecutter.package_name}} tests # Look for 100% coverage
+# Pin point which parts of the code are NOT covered by a test.
+pytest --cov-report term-missing:skip-covered --cov={{cookiecutter.package_name}} .\tests\
+
+# Auto format code and tests
+black tests
+black {{cookiecutter.package_name}}
+
 flake8  # All sorts of guidance
 interrogate   # Docstring check
 safety check  # Check dependent packages for security adviories
-pytest --cov={{cookiecutter.package_name}} tests # Look for 100% coverage
+
 pre-commit run --all-files  # Run all the CI lint tests, including black for auomatic layout
 
 # Check the quality of your documentation
