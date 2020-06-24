@@ -150,7 +150,7 @@ git rebase --interactive [commit-hash]
 
 # OPTIONAL Publish the documentation to the GH-Pages at http(s)://<github_user>.github.io/<repository_name>
 # Note: It takes a few minutes for the pages to apprear.
-# https://{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.package_name }}/
+# https://{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.repo_name }}/
 mkdocs gh-deploy # Subsequent commits to repo will automatically publish gh-pages with action workflow.
 
 # Commit tested code and reviewed documentation.
