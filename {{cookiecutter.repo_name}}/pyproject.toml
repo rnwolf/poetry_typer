@@ -9,13 +9,16 @@ style = "https://raw.githubusercontent.com/wemake-services/wemake-python-stylegu
 
 [tool.poetry]
 name = "{{ cookiecutter.package_name }}"
+vpackages = [
+    { include = "{{ cookiecutter.package_name }}", from = "src" },
+]
 version = "{{ cookiecutter.version }}"
 description = "{{ cookiecutter.project_short_description }}"
 license = "{{ cookiecutter.license|upper }}"
 authors = ["{{ cookiecutter.full_name}} <{{ cookiecutter.email }}>"]
 readme = "README.md"
 repository = "https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.repo_name }}"
-homepage = "https://{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.package_name }}/"
+homepage = "https://{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.repo_name }}/"
 keywords = [{{ cookiecutter.key_words }}]
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -26,12 +29,12 @@ classifiers = [
 
 
 [tool.poetry.scripts]
-{{ cookiecutter.cli_name }} = "{{ cookiecutter.package_name }}.{{ cookiecutter.package_name }}:main"
+{{ cookiecutter.cli_name }} = "{{ cookiecutter.package_name }}.{{ cookiecutter.package_name }}:app"
 
 
 [tool.poetry.dependencies]
 python = "^{{cookiecutter.python_major_version}}.{{cookiecutter.python_minor_version}}"
-typer = "*"
+typer = {extras = ["all"], version = "*"}
 dynaconf = "^3.0.0rc1"
 importlib_metadata = {version = "^1.6.0", python = "<3.8"}
 

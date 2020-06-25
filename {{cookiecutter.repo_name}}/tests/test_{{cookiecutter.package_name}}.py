@@ -1,6 +1,16 @@
 """This is a docstring to help you undersyand your tests later."""
+from typer.testing import CliRunner
 from {{cookiecutter.package_name}}.{{cookiecutter.package_name}} import roll_num
 import re
+
+runner = CliRunner()
+i
+
+def test_version():
+    """Doc string goes here"""
+    result = runner.invoke(app, ["--version"])
+    assert result.exit_code == 0
+    assert "Version" in result.stdout
 
 
 def test_roll_num(capsys):

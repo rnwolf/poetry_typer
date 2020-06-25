@@ -7,6 +7,25 @@ import typer
 app = typer.Typer()
 
 
+try:
+    from importlib.metadata import version, PackageNotFoundError
+except ImportError:  # pragma: no cover
+    from importlib_metadata import version, PackageNotFoundError  # type: ignore
+
+
+try:
+    __version__ = version("{{cookiecutter.package_name}}")
+except PackageNotFoundError:  # pragma: no cover
+    __version__ = "unknown"
+
+
+def version_callback(value: bool):
+    """ Check that we have a version response for this application. """
+    if value:
+        typer.echo(f"Version: {__version__}")
+        raise typer.Exit()
+
+
 def roll(num_dice: int = 1, sides: int = 20) -> Tuple[List[int], int]:
     """Docstring goes here"""
     rolls = sorted(
@@ -84,7 +103,12 @@ def roll_string(dice_str: str):
     typer.echo(f"rolling {formatted_roll}!\n")
     typer.echo(f"your roll: {total}\n")
 
+@app.command()
+def main(
+    version: bool = typer.Option(None, "--version", callback=version_callback),
+):
+    """ DocString goes here. """
 
-def main():
-    """This is the main entry point."""
-    app()
+    # do stuff here.
+    return
+
