@@ -4,7 +4,7 @@ from {{cookiecutter.package_name}}.{{cookiecutter.package_name}} import roll_num
 import re
 
 runner = CliRunner()
-i
+
 
 def test_version():
     """Doc string goes here"""
