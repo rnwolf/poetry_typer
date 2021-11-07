@@ -1,5 +1,5 @@
 [build-system]
-requires = ["poetry>=1.0"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.masonry.api"
 
 
@@ -8,10 +8,12 @@ style = "https://raw.githubusercontent.com/wemake-services/wemake-python-stylegu
 
 
 [tool.poetry]
-name = "{{ cookiecutter.package_name }}"
-vpackages = [
+name = "{{ cookiecutter.project_name }}"
+{% if cookiecutter.package_name != cookiecutter.project_name.replace('-', '_') -%}
+packages = [
     { include = "{{ cookiecutter.package_name }}", from = "src" },
 ]
+{% endif -%}
 version = "{{ cookiecutter.version }}"
 description = "{{ cookiecutter.project_short_description }}"
 license = "{{ cookiecutter.license|upper }}"
@@ -21,7 +23,10 @@ repository = "https://github.com/{{ cookiecutter.github_username }}/{{ cookiecut
 homepage = "https://{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.repo_name }}/"
 keywords = [{{ cookiecutter.key_words }}]
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "{{cookiecutter.development_status}}",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
   "Topic :: Software Development :: Libraries :: Python Modules",
@@ -31,20 +36,24 @@ classifiers = [
 [tool.poetry.scripts]
 {{ cookiecutter.cli_name }} = "{{ cookiecutter.package_name }}.{{ cookiecutter.package_name }}:app"
 
+[tool.poetry.urls]
+Changelog = "https://github.com/{{cookiecutter.github_username}}/{{cookiecutter.repo_name}}/releases"
 
 [tool.poetry.dependencies]
 python = "^{{cookiecutter.python_major_version}}.{{cookiecutter.python_minor_version}}"
 typer = {extras = ["all"], version = "*"}
-dynaconf = "^3.0.0rc1"
-importlib_metadata = {version = "^1.6.0", python = "<3.8"}
 
 
 [tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
+coverage = {extras = ["toml"], version = "^6.1"}
+safety = "^1.10.3"
+mypy = "^0.910"
+typeguard = "^2.13.0"
 interrogate = "*"
 pip-tools = "*"
 proclamation = "^1.0.2"
 typer-cli = "*"
-mypy = "^0.770"
 plantuml-markdown = "^3.2.2"
 
 flake8 = "*"
@@ -57,14 +66,10 @@ flake8-executable = "*"
 flake8-black = "*"
 nitpick = "^0.22"
 
-safety = "^1.9"
-
-pytest = "^5.4"
-pytest-cov = "^2.7"
 pytest-asyncio = "*"
 pytest-randomly = "^3.3"
 
-black = "==19.10b0"
+black = "^20.8b1"
 pre-commit = "*"
 pre-commit-hooks = "*"
 
@@ -73,3 +78,22 @@ rope = "*"
 hypothesis = "*"
 httpie = "*"
 mkdocs = "^1.1"
+
+[tool.coverage.paths]
+source = ["src", "*/site-packages"]
+
+[tool.coverage.run]
+branch = true
+source = ["{{cookiecutter.package_name}}"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 100
+
+[tool.mypy]
+strict = true
+warn_unreachable = true
+pretty = true
+show_column_numbers = true
+show_error_codes = true
+show_error_context = true
