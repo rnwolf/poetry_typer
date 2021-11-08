@@ -29,8 +29,9 @@ git init
 git config --global core.safecrlf false
 git add --all
 git commit -m "first commit"
+git branch -M main
 gh repo create --public
-git push -u origin master
+git push -u origin main
 ```
 
 Side note:  I use Windows and Linux frequently, so there is sometime a problem with line ending in text files on MS-Windows.
