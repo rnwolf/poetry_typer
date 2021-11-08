@@ -34,12 +34,13 @@ def main():
     #  On  MS-Windows use :  git add --chmod=+x -- make-linux-release.sh
     #  On Linux : chmod + x make-linux-release.sh
     git commit -m "First commit"
+    git branch -M main
     # Create a repository for the current directory.
     gh repo create --public
     # Connect up local and remote repo.
-    git push -u origin master
+    git push -u origin main
     # Check that you don't have any existing virtualenv active and create new local .venv
-    virtualenv -p 3.8 .venv
+    virtualenv -p {python_version} .venv
     # Create the Virtualenv in .venv and install dependencies
     poetry install
     # Setup pre-commit and pre-push hooks
