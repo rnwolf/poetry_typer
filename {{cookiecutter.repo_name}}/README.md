@@ -32,6 +32,18 @@ Install the Github CLI tool gh.
 
 https://github.com/cli/cli
 
+For GH to work you also need to make sure you have the following entries in your .ssh config file
+
+'''
+ Host github.com
+   Hostname ssh.github.com
+   Port 443 
+'''
+
+Test access to github with 
+
+ssh -T git@github.com
+
 Install the PlantUML utility to ensure that diagrams embeded in docs can be generated.
 
 Check [instalation instructions.](https://pypi.org/project/plantuml-markdown/)
@@ -91,25 +103,27 @@ git add --all
 
 git commit -m "First commit"
 
+git branch -M main
+
 Create a repository for the current directory with GitHub GH cli utility.
 
 gh repo create --public
 
 Connect up local and remote repo. -u = upstream
 
-git push -u origin master
+git push -u origin main
 
 Create virtualenv (Have some problems doing this with poetry)
 
-py -3.8 -m venv .venv  #Windows
+py -3.10 -m venv .venv  #Windows
 
 or
 
-python3.8 -m venv .venv
+python3.10 -m venv .venv
 
 or use https://virtualenv.pypa.io/en/latest/
 
-virtualenv -p 3.8 .venv
+virtualenv -p 3.10 .venv
 
 Install all dependencies specified in pyproject.toml
 
@@ -120,9 +134,9 @@ Setup pre-commit and pre-push hooks
 poetry run pre-commit install -t pre-commit
 poetry run pre-commit install -t pre-push
 
-Launch IDE, like VSCode
+Launch IDE, like VSCode or PyCharm
 
-Ctrl+Shift P  -> Select Interperter, Testing, Linting etc.
+In VSCode use Ctrl+Shift P  -> Select Interperter, Testing, Linting etc.
 
 Specify what the next version is that will be worked on.
 bump current version with, bump rule:
@@ -251,7 +265,7 @@ https://github.com/python-poetry/poetry/issues/726#issuecomment-598392820
 https://stefan.sofa-rockers.org/2017/11/09/getting-started-with-devpi/
 
 Setup a local Development PyPi to test the upload of releases with poetry
-NOTE CANNOT Use Python 3.8. Works with Python 3.7.
+NOTE CANNOT Use Python 3.8. Works with Python 3.7.  as at 2020 June time frame
 
 If fresh Ubuntu server then
 
