@@ -73,7 +73,15 @@ virtualenv --help
 
 Install poetry, package dependency management tool
 
-pipx install poetry
+
+### osx / linux / bashonwindows install instructions
+```bash
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
+```
+### windows powershell install instructions
+```powershell
+(Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py -UseBasicParsing).Content | python -
+```
 
 Make sure to configure poetry to save virtualenv to a local .venv location, so that it can be found by VSCode and PyCharm.
 
@@ -113,7 +121,7 @@ Connect up local and remote repo. -u = upstream
 
 git push -u origin main
 
-Create virtualenv (Have some problems doing this with poetry)
+Create virtualenv
 
 py -3.10 -m venv .venv  #Windows
 
@@ -124,6 +132,12 @@ python3.10 -m venv .venv
 or use https://virtualenv.pypa.io/en/latest/
 
 virtualenv -p 3.10 .venv
+
+or
+
+poetry env use C:\Users\rnwol\AppData\Local\Programs\Python\Python310\python.exe
+
+poetry env info
 
 Install all dependencies specified in pyproject.toml
 
